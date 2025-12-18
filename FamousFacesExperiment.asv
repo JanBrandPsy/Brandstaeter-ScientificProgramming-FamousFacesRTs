@@ -5,7 +5,7 @@ myWindow = Screen('OpenWindow',myScreen, myBackgroundColour, [0 0 1000 840]);
 KbWait;
 Screen('CloseAll');
 %Plan:
-% Gesichter raussuchen 25 bekannte, 25 random
+% Gesicher raussuchen 25 bekannte, 25 random
 % Experiment in großer For-Schleife bis alle Bilder durch sind
 % dann in einem Trial: 
 % Fixationskreuz, Maske gejittert, random Face
