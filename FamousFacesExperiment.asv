@@ -20,7 +20,7 @@ myWindow = Screen('OpenWindow',myScreen, myBackgroundColour, [0 0 1000 840]);
 r = randperm(5);
 
 %Results-Matrix initialisieren
-Results = zeros(2,5)
+Results = zeros(2,50)
 
 for i = 1:5
     Screen('DrawTexture', myWindow, fixcrossTexture); %Fixationskreuz
@@ -28,23 +28,27 @@ for i = 1:5
     waitSecs(3)
     Screen('DrawTexture', myWindow, maskTexture); %Maske
     Screen('Flip',myWindow);
-    waitSecs(3) %jittern?
+    waitSecs(3)
     face=imread('picture' + tostring(r(i)), 'jpg');%random Stimulusbild auswählen
     faceTexture = Screen('MakeTexture', myWindow,face);
     Screen('DrawTexture', myWindow, faceTexture); %Stimulus
     [pressed, secs, keyCode] = KbCheck;
-    [~, t0]= Screen('Flip', myWindow);
+    [~, t0]= Screen('Flip', myWindow); t0 = getSecs;
     while true
         [pressed, secs, keyCode] = KbCheck;
-        if pressed == true %verzerrt dass wenn ich darauf warte wie oft der if-Bedingung checkt?
-            break
-        end
-    end
-    Results(1,i) = secs - t0;
-    Results(2,i) = KbName(keyCode);
-   
+        if pressed == true
+            
+    %Wann wo stoppts?
+    RT = secs - t0;
+    Key = KbName(keyCode);
+    
+    
+    
+    %timer starten & auf button press warten
+    %Zeit & button in Matrix eintragen
+    
 end
-
+KbWait;
 Screen('CloseAll');
 %Results-Matrix als Datei speichern?
 
