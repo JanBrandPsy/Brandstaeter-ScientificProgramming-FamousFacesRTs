@@ -3,14 +3,13 @@
 % Experiment in großer For-Schleife bis alle Bilder durch sind
 % dann in einem Trial: 
 % Fixationskreuz, Maske gejittert, random Face
-% Timer starten, Response abwarten
+% Timer starten, Response abwarten, Timer stoppen
 % protokollieren welche Taste und wie lange in große results Matrix
-% das Face abhaken damits nicht wiederholt wird???, nächster Trial wieder von vorn
+% das Face abhaken damits nicht wiederholt wird, nächster Trial wieder von vorn
 % zum Schluss RTs averagen, Fehlerrate berechnen?
 
-VPID = '1'; %stell ich immer manuell ein?
-
-Screen('Preference', 'SkipSyncTests', 1); %Basics
+VPID = '2'; %stell ich immer manuell ein?+vorher workspace clearn weil sonst r gleich bleibt
+ Screen('Preference', 'SkipSyncTests', 1); %Basics
 myScreen = 0;
 myBackgroundColour = [255 255 255];
 myWindow = Screen('OpenWindow',myScreen, myBackgroundColour, [0 0 1920 1080]);
@@ -20,8 +19,8 @@ fixCross(23:27,:)=0;
 fixCross(:,23:27)=0;
 fixcrossTexture = Screen('MakeTexture',myWindow,fixCross);
 
-mask = ones(100, 100)*255; % Maske Bitmap
-for j = 1:10000 %Maske noisy machen
+mask = ones(500, 500)*255; % Maske Bitmap
+for j = 1:250000 %Maske noisy machen
    chance = randi(4);
    if chance == (1 || 2 || 3)
        mask(j) = 0;
@@ -31,9 +30,9 @@ for j = 1:10000 %Maske noisy machen
 end
 maskTexture = Screen('MakeTexture', myWindow,mask);
 
-folder = 'unbearbeiteteStimuli'; %Ordner der Stimuli
+folder = 'Stimuli'; %Ordner der Stimuli
 
-r = randperm(5); %für die Random Reihenfolge der Stimuli
+r = randperm(50); %für die Random Reihenfolge der Stimuli
 
 %Results-Struktur-Array initialisieren
 results = struct('RT',[],'Taste','','Category','');
@@ -48,7 +47,7 @@ Screen('DrawText', myWindow, Instruktion3, [600], [620], [10 10 10]);
 Screen('Flip', myWindow);
 KbWait
 
-for i = 1:5
+for i = 1:50
     Screen('DrawTexture', myWindow, fixcrossTexture); %Fixationskreuz
     Screen('Flip',myWindow); 
     WaitSecs(1)
@@ -57,9 +56,11 @@ for i = 1:5
     Screen('Flip',myWindow);
     WaitSecs(0.2+(rand*2))
     
-    name = ['Face' num2str(r(i)) '*.jpg'];  %Stimulus
-    datei = dir(fullfile(folder, name));
+    datei = dir(fullfile(folder, sprintf('Face%02d*.png', r(i)))); %Stimulus
+   
+    
     face = imread(fullfile(folder, datei(1).name));
+    face = imresize(face, [600 600]);
     faceTexture = Screen('MakeTexture', myWindow,face);
     Screen('DrawTexture', myWindow, faceTexture);
     
@@ -80,7 +81,7 @@ for i = 1:5
     
     results(i).RT = secs - t0;
     results(i).Taste = KbName(keyCode); 
-    results(i).Category = category; %damit könnte ich dann berechen % ob korrekt oder inkorrekt gedrückt?
+    results(i).Category = category; %damit könnte ich dann % berechnen ob korrekt oder inkorrekt gedrückt?
 end
 
 Abschluss = ['Vielen Dank fürs Mitmachen!'];
@@ -89,7 +90,6 @@ Screen('Flip', myWindow);
 
 resultsname = ['Results\sub-' VPID '_task-famousfaces_beh.csv'];%Results-Dateinamen definieren
 writetable(struct2table(results),resultsname)%Results als Datei speichern
-%Excel rafft nicht dass man verschiedene Variablen auch mit kommas trennen kann
-
+%Excel rafft nicht dass man verschiedene Variablen auch mit kommas trennt??
 WaitSecs(2)
 Screen('CloseAll');
