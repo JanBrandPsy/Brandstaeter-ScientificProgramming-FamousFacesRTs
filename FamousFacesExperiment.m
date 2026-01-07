@@ -8,7 +8,7 @@
 % das Face abhaken damits nicht wiederholt wird, nächster Trial wieder von vorn
 % zum Schluss RTs averagen, Fehlerrate berechnen?
 
-VPID = '2'; %stell ich immer manuell ein?+vorher workspace clearn weil sonst r gleich bleibt
+VPID = '5'; %stell ich immer manuell ein?+vorher workspace clearn weil sonst r gleich bleibt
  Screen('Preference', 'SkipSyncTests', 1); %Basics
 myScreen = 0;
 myBackgroundColour = [255 255 255];
