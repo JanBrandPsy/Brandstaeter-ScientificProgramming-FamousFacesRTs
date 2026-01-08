@@ -54,7 +54,7 @@ subset = FilteredResults.RT(FilteredResults.VP==3 & FilteredResults.Category=='u
 mean(subset) %strichprobenartiger sanity check das ich keine Logikfehler gemacht hab, aber die means sprechen überein!!
 
 %%
-%t-Testen?
+%t-Testen
 mean(MeansF)
 mean(MeansU) % oha die RT ist wirklich schneller bei famous-bekannten Gesichtern!
 diffs = MeansU - MeansF;
