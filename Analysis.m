@@ -1,0 +1,66 @@
+%große Resultstabelle initialisieren
+
+Results = table('Size', [0 4],'VariableNames', {'VP', 'RT', 'Taste', 'Category'},'VariableTypes',{'double','double','categorical','categorical'});
+%%
+%Results importieren 
+for i = 1:5
+   file = strcat('Results\sub-', num2str(i),'_task-FamousFaces_beh.csv');
+   temp = readtable(file)
+   bruh = ones(height(temp),1)*i;
+   temp.VP = bruh;
+   Results = [Results; temp];
+end
+%%
+%unkorrekte Trials rausfiltern -> gute Ergebnisse in neue Matrix
+%unkorrekt heißt links gedrückt wenn unfamous und rechts gedrückt wenn famous
+FilteredResults = Results;
+for j = 1:height(FilteredResults)
+    disp(j)
+    if FilteredResults.Taste(j)== 'left' && FilteredResults.Category(j) == 'unfamous'
+        disp(j + " inkorrekt")
+        FilteredResults(j, :) = [];
+     elseif FilteredResults.Taste(j)== 'right' && FilteredResults.Category(j)=='famous'
+         disp(j + " inkorrekt")
+         FilteredResults(j, :) = [];
+     end
+end
+
+%%
+% Averages berechnen: einfach Filtered Results durchlaufen geht nicht weil
+% RTs sind ja so abhängig -> pro VP einen Mittelwert pro Kategorie    
+        
+% genausolangen Vektor für alle Zeilen in FilteredResults von i-ter VP 1 setzen, rest 0
+%-> alle true Zeilen in VP-Tabelle -> pro Category filtern und mean berechnen 
+%-> mit den 5 Means pro Kategorie einen statistischen Mittelwertsvergleich machen
+MeansF = [];
+MeansU = [];
+for o = 1:5 %ich will pro VP means -> für jede welche berechnen
+    tempF = [];
+    tempU = [];
+    for p = 1:240 %ich durchlauf Results und wenn aktuelle VP übereinstimmt und je Kategorie sammel ich RTs 
+        if FilteredResults.VP(p) == o && FilteredResults.Category(p) == 'famous'
+            tempF = [tempF; FilteredResults.RT(p)];
+        elseif FilteredResults.VP(p) == o && FilteredResults.Category(p)== 'unfamous'
+            tempU = [tempU; FilteredResults.RT(p)];
+        end
+    end
+    MeansF(o) = mean(tempF); %die gesammelten RTs der o-ten VP mitteln und das in Means packen
+    MeansU(o) = mean(tempU);
+    % dann hab ich am Ende pro VP die mittlere RT die ich famous vs unfamous vergleichen kann
+end
+%ich vermute dass diese Implementierung bei sehr großen Daten gar nicht so effizient laufen würde?
+%%
+subset = FilteredResults.RT(FilteredResults.VP==3 & FilteredResults.Category=='unfamous');
+mean(subset) %strichprobenartiger sanity check das ich keine Logikfehler gemacht hab, aber die means sprechen überein!!
+
+%%
+%t-Testen?
+mean(MeansF)
+mean(MeansU) % oha die RT ist wirklich schneller bei famous-bekannten Gesichtern!
+diffs = MeansU - MeansF;
+meanDiff = mean(diffs);
+stdDiff = std(diffs);
+t = meanDiff/(stdDiff/sqrt(5))
+% aber der kritische t-Wert in der t-Tabelle wäre bei df = 4 und alpha =.05 schon 2,13 ... es ist nicht signifikant :(
+
+
