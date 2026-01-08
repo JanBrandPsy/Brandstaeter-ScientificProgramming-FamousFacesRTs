@@ -14,14 +14,10 @@ end
 %unkorrekte Trials rausfiltern -> gute Ergebnisse in neue Matrix
 %unkorrekt heißt links gedrückt wenn unfamous und rechts gedrückt wenn famous
 FilteredResults = Results;
-for j = 1:height(FilteredResults)
-    disp(j)
-    if FilteredResults.Taste(j)== 'left' && FilteredResults.Category(j) == 'unfamous'
+for j = height(FilteredResults):-1:1 %rückwärts durchlaufen weil sonst gibts nen Error dass er die Tabelle exceeded
+    if (FilteredResults.Taste(j)== 'left' && FilteredResults.Category(j) == 'unfamous')||(FilteredResults.Taste(j)== 'right' && FilteredResults.Category(j)=='famous')
         disp(j + " inkorrekt")
         FilteredResults(j, :) = [];
-     elseif FilteredResults.Taste(j)== 'right' && FilteredResults.Category(j)=='famous'
-         disp(j + " inkorrekt")
-         FilteredResults(j, :) = [];
      end
 end
 
@@ -62,5 +58,8 @@ meanDiff = mean(diffs);
 stdDiff = std(diffs);
 t = meanDiff/(stdDiff/sqrt(5))
 % aber der kritische t-Wert in der t-Tabelle wäre bei df = 4 und alpha =.05 schon 2,13 ... es ist nicht signifikant :(
-
+%% 
+bar([mean(MeansF), mean(MeansU)])
+ylabel('Mittlere RT')
+set(gca, 'XTickLabel', {'famous','unfamous'})
 
